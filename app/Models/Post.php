@@ -10,5 +10,14 @@ class Post extends Model
     use HasFactory;
     protected $fillable = ['user_id', 'title', 'description','image_url','published','username']; 
     protected $table='posts';
-    public $timestamps=false;
+    public $timestamps=true;
+
+    
+
+    public function commentdata()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+
 }

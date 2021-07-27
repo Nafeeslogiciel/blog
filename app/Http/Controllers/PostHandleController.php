@@ -18,9 +18,13 @@ class PostHandleController extends Controller
      */
     public function index()
     {
-       return User::find(4)->getPost;
+      // return User::find(1)->getPost;
         
         //return ProductResource::collection(Post::all());
+        $userId = Auth::user()->id;
+		$user = User::find($userId);
+		$posts = $user->post()->get();
+		return ProductResource::collection($posts);
         
     }
 
@@ -59,7 +63,6 @@ class PostHandleController extends Controller
         
         $user=Post::create([
             'user_id'=>Auth::user()->id,
-            
             'title'=>$request['title'],
             'description'=>$request['description'],
             'image_url'=>$request->file('image_url')->store('app'), 

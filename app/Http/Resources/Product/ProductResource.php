@@ -20,7 +20,8 @@ class ProductResource extends JsonResource
             'description'=>$this->description,
             'image_path'=>$this->image_url,
             'time_duration'=>$this->published,
-            'Blog_user'=>$this->username
+            'Blog_user'=>$this->username,
+            'Created_by'=>$this->created_at,
         ];
     }
 }

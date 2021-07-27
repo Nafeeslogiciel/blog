@@ -1,43 +1,28 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Comment;
+use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-
 use Illuminate\Support\Facades\Validator;
-
-
-class UserController extends Controller
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\Product\CommentResource;
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request)
+    public function index()
     {
-        
-        
-        if(Auth::attempt([
-            'email'=>$request->email,
-            'password'=>$request->password
-          ])){
-             $user= Auth::user();
-             $resArr=[];
-             
-             $resArr['token']=$user->createToken('api-application')->accessToken;
-             $resArr['name']=$user->name;
-             return response()->json($resArr,200);
-            }
-            else{
-                return response()->json(['error'=>'Unauthorized Access'],401);
-            }
-
-           
-
         //
+        //return Post::find(2)->commentdata;
+        $comments = Comment::all();
+		return CommentResource::collection($comments);
+
+        
+
     }
 
     /**
@@ -58,29 +43,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        
         //
-
         $validation = Validator::make($request->all(),[
+			'post_id' => 'required',
             'name'=>'required',
-            'email'=>'required|string|email|unique:users',
-            'password'=>'required'
-            
+            'comment'=>'required',
+        ]);
+        if($validation->fails())
+        {
 
-    ]);
-    if($validation->fails())
-    {
-        return response()->json($validation->errors(),202);
-    }
-    $allData=$request->all();
-    $allData['password']=bcrypt($allData['password']);
-    
-    $user=User::create($allData);
-
-    $resArr=[];
-    
-    $resArr['name']=$user->name.' is register successfully';
-    return response()->json($resArr,200);
+            return response()->json($validation->errors(),422);
+        }
+        $comment=Comment::create([
+            'post_id' => $request->post_id,
+            'name' => $request->name,
+            'comment' => $request->comment,
+        ]);
+        
+        return response()->json(['result' => 'Record Insert Successfully'], 201);
 
     }
 
@@ -90,9 +70,10 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Comment $comment)
     {
         //
+        return new CommentResource($comment);
     }
 
     /**
@@ -113,9 +94,14 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Comment $comment)
     {
         //
+        $comment->name = $request->name;
+        $comment->comment = $request->comment;
+        $comment->save();
+
+        return response()->json(['result'=>"Updated Succeccfully"],200);
     }
 
     /**
@@ -124,8 +110,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Comment $comment)
     {
         //
+
+        $result = $comment->delete();
+		if ($result) {
+			return response()->json(['result' => 'Deleted Successfully'], 200);
+		}
     }
 }

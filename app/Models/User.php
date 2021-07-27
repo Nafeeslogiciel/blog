@@ -14,10 +14,10 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory,Notifiable;
     public $timestamps = false;
     
-    function getPost()
-    {
-        return $this->hasMany(Post::class);
-    }
+    public function post()
+	{
+		return $this->hasMany(Post::class);
+	}
    
     /**
      * The attributes that are mass assignable.

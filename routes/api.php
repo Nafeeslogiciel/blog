@@ -7,6 +7,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostHandleController;
 use App\Http\Resources\Product\ProductResource;
+use App\Http\Controllers\CommentController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,7 @@ use App\Http\Resources\Product\ProductResource;
 Route::post('userlogin',[Usercontroller::class,'login']);
 Route::post('register',[Usercontroller::class,'store']);
 Route::middleware('auth:api')->resource('postinfo',PostHandleController::class)->only(['index','store','update','destroy']);
+Route::resource('comment',CommentController::class);
 
 
 
